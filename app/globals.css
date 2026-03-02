@@ -10,11 +10,22 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* Migrated from old config */
+  --animate-pulse: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --backdrop-blur-xs: 2px;
+}
+
+/* Disable preflight for Ant Design compatibility */
+@layer base {
+  *, ::before, ::after {
+    border-color: var(--color-gray-200, currentColor);
+  }
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
+    /* --background: #0a0a0a; */
     --foreground: #ededed;
   }
 }
