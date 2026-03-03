@@ -17,6 +17,7 @@ const getConnection = async (
       page: pageParam,
     }
   );
+  console.log(result.data);
   return result.data;
 };
 

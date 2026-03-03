@@ -59,11 +59,11 @@ const MessageInput: React.FC<MessageInputProps> = ({
     isTypingRef.current = false;
 
     socketService.emit("send-message", payload);
-    await messageMutation.mutateAsync({
-      chatId,
-      message,
-      senderId,
-    });
+    // await messageMutation.mutateAsync({
+    //   chatId,
+    //   message,
+    //   senderId,
+    // });
 
     setMessage("");
   };

@@ -23,6 +23,7 @@ const chatSlice = createSlice({
     messageReceived: (state, action) => {
       console.log(
         "📩 REDUX: Message received and added to state:",
+        
         action.payload,
       );
       state.messages.push(action.payload);

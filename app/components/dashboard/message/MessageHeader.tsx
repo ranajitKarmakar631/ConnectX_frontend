@@ -36,7 +36,6 @@
 //   return `Last seen on ${lastSeen.format("DD MMM YYYY")}`;
 // };
 
-
 // export const formatMessageTime = (date: string | Date): string => {
 //   const messageDate = dayjs(date);
 //   const now = dayjs();
@@ -57,14 +56,11 @@
 //   return messageDate.format("DD MMM YYYY");
 // };
 
-
 // const MessageHeader= ({chatId, opponentProfile, isTyping }:{chatId?:string, isTyping?:boolean, opponentProfile?: ChatHeaderProps}) => {
 
 //   if (!opponentProfile) return null;
 
 //   console.log(isTyping)
-
-  
 
 //   const initials = opponentProfile.displayName
 //     ?.split(" ")
@@ -112,7 +108,7 @@
 //     </div>
 
 //     <div className="flex items-center gap-2">
-      
+
 //       <AudioCall />
 //       <VideoCall chatId={chatId} opponentProfile={opponentProfile}/>
 //       <Button
@@ -130,7 +126,6 @@
 
 // export default MessageHeader;
 
-
 import React from "react";
 import { Avatar, Badge, Button, Typography } from "antd";
 import {
@@ -139,6 +134,9 @@ import {
   MoreOutlined,
 } from "@ant-design/icons";
 import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+
+dayjs.extend(relativeTime);
 import AudioCall from "../calls/AudioCall";
 import VideoCall from "../calls/VideoCall";
 
@@ -155,8 +153,7 @@ export const formatLastSeen = (date: string | Date): string => {
     return `Last seen today at ${lastSeen.format("hh:mm A")}`;
   if (lastSeen.isSame(now.subtract(1, "day"), "day"))
     return `Last seen yesterday at ${lastSeen.format("hh:mm A")}`;
-  if (now.diff(lastSeen, "day") < 7)
-    return `Last seen ${lastSeen.fromNow()}`;
+  if (now.diff(lastSeen, "day") < 7) return `Last seen ${lastSeen?.fromNow()}`;
   return `Last seen on ${lastSeen.format("DD MMM YYYY")}`;
 };
 
@@ -174,12 +171,12 @@ const MessageHeader = ({
   chatId,
   opponentProfile,
   isTyping,
-  isOnline = false
+  isOnline = false,
 }: {
   chatId?: string;
   isTyping?: boolean;
   opponentProfile?: any;
-  isOnline:boolean
+  isOnline: boolean;
 }) => {
   if (!opponentProfile) return null;
   // console.log("onlineeeeeeeeeee",isOnline)
@@ -188,7 +185,11 @@ const MessageHeader = ({
     .map((n: string) => n[0])
     .join("")
     .toUpperCase();
-  const statusText = isOnline ? 'Online' : opponentProfile?.lastSeen? `${formatLastSeen(opponentProfile?.lastSeen)}`: "Offline";
+  const statusText = isOnline
+    ? "Online"
+    : opponentProfile?.lastSeen
+      ? `${formatLastSeen(opponentProfile?.lastSeen)}`
+      : "Offline";
 
   return (
     <div
@@ -217,23 +218,23 @@ const MessageHeader = ({
       <div className="flex items-center justify-between">
         {/* Left: Avatar + Name */}
         <div className="flex items-center gap-4">
-          
-            <Avatar
-              size={52}
-              style={{
-                // background: "linear-gradient(135deg, #14b8a6, #0ea5e9)",
-                fontSize: "18px",
-                fontWeight: 700,
-                letterSpacing: "-0.5px",
-                borderRadius: "14px",
-              }}
-            >
-              {initials}
-            </Avatar>
+          <Avatar
+            size={52}
+            style={{
+              // background: "linear-gradient(135deg, #14b8a6, #0ea5e9)",
+              fontSize: "18px",
+              fontWeight: 700,
+              letterSpacing: "-0.5px",
+              borderRadius: "14px",
+            }}
+          >
+            {initials}
+          </Avatar>
 
           <div>
-              
-            <Typography.Title level={5}>{opponentProfile?.displayName}</Typography.Title>
+            <Typography.Title level={5}>
+              {opponentProfile?.displayName}
+            </Typography.Title>
 
             <div style={{ marginTop: "2px", height: "18px" }}>
               {isTyping ? (
@@ -249,7 +250,10 @@ const MessageHeader = ({
                     typing
                   </span>
                   {/* Animated dots */}
-                  <div className="flex items-center gap-0.5" style={{ marginTop: "2px" }}>
+                  <div
+                    className="flex items-center gap-0.5"
+                    style={{ marginTop: "2px" }}
+                  >
                     {[0, 1, 2].map((i) => (
                       <span
                         key={i}
@@ -312,7 +316,7 @@ const MessageHeader = ({
               border: "1px solid rgba(255,255,255,0.08)",
             }}
           >
-            <AudioCall chatId={chatId} opponentProfile={opponentProfile}/>
+            <AudioCall chatId={chatId} opponentProfile={opponentProfile} />
           </div>
 
           {/* Video Call */}

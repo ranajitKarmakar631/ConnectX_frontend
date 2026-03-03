@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import React, { useEffect, useRef, useMemo } from "react";
 import { Avatar, Spin } from "antd";
@@ -36,11 +36,11 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   const isInitialLoad = useRef<boolean>(true);
 
   const reduxMessages = useSelector(
-    (state: any) => state.chat.messages as ReduxMessage[]
+    (state: any) => state.chat.messages as ReduxMessage[],
   );
 
   const reduxIsTypingChat = useSelector(
-    (state: any) => state.chat.typingChats as string[]
+    (state: any) => state.chat.typingChats as string[],
   );
 
   const chatId = selectedChat?._id;
@@ -50,29 +50,41 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     hasNextPage,
     isFetchingNextPage,
     isLoading,
+    
     fetchNextPage,
   } = useGetChatMessageList({ filter: { chatId } });
 
   const apiMessages = messages ?? [];
   const isTyping = reduxIsTypingChat.includes(chatId);
 
-  const socketMessages = reduxMessages.filter(
-    (msg) => msg.chatId === chatId
-  );
+  const socketMessages = reduxMessages.filter((msg) => msg.chatId === chatId);
 
-  /* ───────── Merge + Sort Messages ───────── */
+  /* ───────── Merge + Sort + Deduplicate Messages ───────── */
   const sortedMessages = useMemo(() => {
-    return [...apiMessages, ...socketMessages]
-      .map((msg: any) => ({
-        ...msg,
-        time: msg.createdAt || msg.timestamp,
-      }))
-      .sort(
-        (a: any, b: any) =>
-          new Date(a.createdAt || a.timestamp).getTime() -
-          new Date(b.createdAt || b.timestamp).getTime()
-      );
-  }, [apiMessages, socketMessages]);
+  const map = new Map<string, any>();
+
+  [...apiMessages, ...socketMessages].forEach((msg: any) => {
+    const uniqueKey =
+      msg._id ||
+      msg.id ||
+      `${msg.senderId}-${msg.message}-${msg.createdAt || msg.timestamp}`;
+
+    if (!map.has(uniqueKey)) {
+      map.set(uniqueKey, msg);
+    }
+  });
+
+  return Array.from(map.values())
+    .map((msg: any) => ({
+      ...msg,
+      time: msg.createdAt || msg.timestamp,
+    }))
+    .sort(
+      (a: any, b: any) =>
+        new Date(a.createdAt || a.timestamp).getTime() -
+        new Date(b.createdAt || b.timestamp).getTime(),
+    );
+}, [socketMessages]);
 
   /* ───────── Join / Leave Room ───────── */
   useEffect(() => {
@@ -103,12 +115,12 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     }
 
     const isNearBottom =
-      container.scrollHeight - container.scrollTop - container.clientHeight < 150;
+      container.scrollHeight - container.scrollTop - container.clientHeight <
+      150;
 
     if (isNearBottom) {
       container.scrollTop = container.scrollHeight;
     }
-
   }, [sortedMessages]);
 
   /* ───────── IntersectionObserver for Infinite Scroll ───────── */
@@ -137,7 +149,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       {
         root: container,
         threshold: 1.0,
-      }
+      },
     );
 
     observer.observe(target);
@@ -165,7 +177,8 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         display: "flex",
         flexDirection: "column",
         gap: "4px",
-        backgroundImage: "url('https://i.pinimg.com/736x/58/c3/33/58c33377dfcbb3022493dec49d098b02.jpg')",
+        backgroundImage:
+          "url('https://i.pinimg.com/736x/58/c3/33/58c33377dfcbb3022493dec49d098b02.jpg')",
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
@@ -176,7 +189,9 @@ const MessageBox: React.FC<MessageBoxProps> = ({
 
       {/* Top Loading Spinner */}
       {isFetchingNextPage && (
-        <div style={{ display: "flex", justifyContent: "center", padding: "10px" }}>
+        <div
+          style={{ display: "flex", justifyContent: "center", padding: "10px" }}
+        >
           <Spin size="small" />
         </div>
       )}
@@ -227,7 +242,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                   display: "flex",
                   alignItems: "flex-end",
                   gap: "10px",
-                  paddingInline:'20px',
+                  paddingInline: "20px",
                   flexDirection: isUser ? "row-reverse" : "row",
                   marginBottom: isLast ? "10px" : "2px",
                 }}
@@ -250,8 +265,12 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                     style={{
                       padding: "6px 8px 8px 8px",
                       borderRadius: isUser
-                        ? isLast ? "10px 0px 10px 10px" : "8px"
-                        : isLast ? "0px 10px 10px 10px" : "8px",
+                        ? isLast
+                          ? "10px 0px 10px 10px"
+                          : "8px"
+                        : isLast
+                          ? "0px 10px 10px 10px"
+                          : "8px",
                       backgroundColor: isUser ? "#005246" : "#363636",
                       fontSize: "15px",
                       wordBreak: "break-word",
@@ -265,7 +284,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                       style={{
                         marginLeft: "10px",
                         fontSize: "12px",
-                        fontWeight:'500',
+                        fontWeight: "500",
                         color: "#667788",
                       }}
                     >
