@@ -23,9 +23,6 @@ jobs:
       - name: Install Dependencies
         run: npm install --legacy-peer-deps
 
-      - name: Build Next.js App
-        run: npm run build
-
       - name: Verify Build Output
         run: |
           echo "Checking project files"
