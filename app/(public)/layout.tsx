@@ -21,7 +21,7 @@ export default function PublicLayout({
     }
   }, [isAuthenticated, user, router, isInitialized]);
 
-  if (isInitialized && isAuthenticated) return null;
+  if (!isInitialized || isAuthenticated) return null;
 
   return <>{children}</>;
 }

@@ -7,21 +7,24 @@ import { useSelector } from "react-redux";
 import { useSocket } from "@/app/SocketProvider";
 import { useGetUserOnline } from "@/service/redis/redisService";
 
-const MessageMainContainer = ({ selectedChat }: { selectedChat: any }) => {
+import { Chat } from "@/types";
+
+const MessageMainContainer = ({
+  selectedChat,
+}: {
+  selectedChat: Chat | null;
+}) => {
   const { userId } = useParams();
-  const socket = useSocket();
   const { data: onlineStatus } = useGetUserOnline({
     _id: selectedChat?.opponentProfile?._id,
   });
   const reduxIsTypingChat = useSelector(
     (state: any) => state.chat.typingChats as string[],
   );
-  const [isTyping, setIsTyping] = useState(false);
 
-  useEffect(() => {
-    if (reduxIsTypingChat.includes(selectedChat?._id)) setIsTyping(true);
-    else setIsTyping(false);
-  }, [reduxIsTypingChat, selectedChat?._id]);
+  const isTyping = selectedChat?._id
+    ? reduxIsTypingChat.includes(selectedChat._id)
+    : false;
 
   /* ── No chat selected ── */
   if (!selectedChat) {
@@ -106,7 +109,7 @@ const MessageMainContainer = ({ selectedChat }: { selectedChat: any }) => {
         chatId={selectedChat._id}
         isTyping={isTyping}
         opponentProfile={selectedChat.opponentProfile}
-        isOnline={onlineStatus?.data?.isOnline}
+        isOnline={!!onlineStatus?.data?.isOnline}
       />
 
       {/* Message area — flex-1 with hidden overflow so MessageBox scrolls internally */}
@@ -121,7 +124,10 @@ const MessageMainContainer = ({ selectedChat }: { selectedChat: any }) => {
       </div>
 
       {/* Input */}
-      <MessageInput senderId={userId as string} selectedChat={selectedChat} />
+      <MessageInput
+        senderId={userId as string}
+        selectedChat={selectedChat as Chat}
+      />
     </div>
   );
 };

@@ -1,13 +1,5 @@
 import React from "react";
-import {
-  Card,
-  Avatar,
-  Badge,
-  Tag,
-  Tooltip,
-  Space,
-  Typography,
-} from "antd";
+import { Card, Avatar, Badge, Tag, Tooltip, Space, Typography } from "antd";
 import {
   UserOutlined,
   EnvironmentOutlined,
@@ -37,19 +29,15 @@ interface UserProfileProps {
     displayName?: string;
     about?: string;
     isOnline?: boolean;
-    lastSeen?: any;
+    lastSeen?: string | { $date: string };
     address?: Address;
     privacy?: Privacy;
     isActive?: boolean;
-    createdAt?: any;
+    createdAt?: string | { $date: string };
   };
 }
 
 const UserProfile: React.FC<UserProfileProps> = ({ userData }) => {
-  /* =========================
-     Guard Against Undefined
-  ========================= */
-
   if (!userData) {
     return (
       <div className="flex items-center justify-center h-full">
@@ -57,10 +45,6 @@ const UserProfile: React.FC<UserProfileProps> = ({ userData }) => {
       </div>
     );
   }
-
-  /* =========================
-     Safe Destructuring
-  ========================= */
 
   const {
     displayName = "Unknown User",
@@ -73,14 +57,15 @@ const UserProfile: React.FC<UserProfileProps> = ({ userData }) => {
     createdAt,
   } = userData;
 
-  /* =========================
-     Utility Functions
-  ========================= */
-
-  const formatDate = (dateValue: any) => {
+  const formatDate = (dateValue?: string | { $date: string }): string => {
     if (!dateValue) return "N/A";
-    const parsedDate = new Date(dateValue?.$date || dateValue);
 
+    const dateStr =
+      typeof dateValue === "object" && dateValue !== null && "$date" in dateValue
+        ? dateValue.$date
+        : (dateValue as string);
+
+    const parsedDate = new Date(dateStr);
     if (isNaN(parsedDate.getTime())) return "N/A";
 
     return parsedDate.toLocaleDateString("en-US", {
@@ -90,29 +75,24 @@ const UserProfile: React.FC<UserProfileProps> = ({ userData }) => {
     });
   };
 
-  const getLastSeenText = () => {
+  const getLastSeenText = (): string => {
     if (isOnline) return "Online now";
     if (!lastSeen) return "Offline";
 
-    const lastSeenDate = new Date(lastSeen?.$date || lastSeen);
+    const dateStr =
+      typeof lastSeen === "object" && lastSeen !== null && "$date" in lastSeen
+        ? lastSeen.$date
+        : (lastSeen as string);
+
+    const lastSeenDate = new Date(dateStr);
     if (isNaN(lastSeenDate.getTime())) return "Offline";
 
-    const now = new Date();
-    const diffMs = now.getTime() - lastSeenDate.getTime();
-
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMs / 3600000);
-    const diffDays = Math.floor(diffMs / 86400000);
-
-    if (diffMins < 1) return "Just now";
-    if (diffMins < 60) return `${diffMins}m ago`;
-    if (diffHours < 24) return `${diffHours}h ago`;
-    return `${diffDays}d ago`;
+    return `Last seen ${lastSeenDate.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    })}`;
   };
-
-  /* =========================
-     UI
-  ========================= */
 
   return (
     <Card
@@ -149,7 +129,6 @@ const UserProfile: React.FC<UserProfileProps> = ({ userData }) => {
           {getLastSeenText()}
         </Text>
 
-        {/* About */}
         <div className="w-full bg-blue-50 rounded-lg p-3 mt-3">
           <Paragraph className="mb-0 text-center text-gray-700 text-sm">
             {about}
@@ -159,7 +138,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ userData }) => {
 
       {/* Location */}
       <div className="mb-4 p-3 bg-gray-50 rounded-lg">
-        <Space orientation="vertical" size={2} className="w-full">
+        <Space direction="vertical" size={2} className="w-full">
           <div className="flex items-center text-gray-600">
             <EnvironmentOutlined className="mr-2 text-red-500" />
             <Text strong className="text-xs">
@@ -193,11 +172,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ userData }) => {
             </Tag>
           </Tooltip>
 
-          <Tooltip
-            title={`Profile photo visible to ${
-              privacy?.profilePhoto || "N/A"
-            }`}
-          >
+          <Tooltip title={`Profile photo visible to ${privacy?.profilePhoto || "N/A"}`}>
             <Tag color="purple" className="text-xs cursor-help">
               Photo: {privacy?.profilePhoto || "N/A"}
             </Tag>

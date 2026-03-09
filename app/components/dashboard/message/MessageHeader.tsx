@@ -140,8 +140,10 @@ dayjs.extend(relativeTime);
 import AudioCall from "../calls/AudioCall";
 import VideoCall from "../calls/VideoCall";
 
+import { User } from "@/types";
+
 interface ChatHeaderProps {
-  opponentProfile: any;
+  opponentProfile: User;
 }
 
 export const formatLastSeen = (date: string | Date): string => {
@@ -175,7 +177,7 @@ const MessageHeader = ({
 }: {
   chatId?: string;
   isTyping?: boolean;
-  opponentProfile?: any;
+  opponentProfile?: User;
   isOnline: boolean;
 }) => {
   if (!opponentProfile) return null;

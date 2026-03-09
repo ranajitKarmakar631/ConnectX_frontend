@@ -1,22 +1,30 @@
 import { Button, Popover } from "antd";
 import { Smile } from "lucide-react";
-import React, { useState } from "react";
+import React from "react";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 
-const Content = ({handleChange}:{handleChange:any}) => {
+const Content = ({
+  handleChange,
+}: {
+  handleChange: (emoji: { native: string }) => void;
+}) => {
   // const [emoji, setEmoji]= useState()
-   const handleEmojiSelect = (emoji : any) => {
-    handleChange(emoji)
+  const handleEmojiSelect = (emoji: { native: string }) => {
+    handleChange(emoji);
     console.log(emoji);
-  }
-  return <Picker data={data} onEmojiSelect={handleEmojiSelect}  />;
+  };
+  return <Picker data={data} onEmojiSelect={handleEmojiSelect} />;
 };
 
-const EmojiBox = ({handleChange}:{handleChange:any}) => {
+const EmojiBox = ({
+  handleChange,
+}: {
+  handleChange: (emoji: { native: string }) => void;
+}) => {
   return (
     <div>
-      <Popover content={<Content handleChange={handleChange}/>} title="Emojis">
+      <Popover content={<Content handleChange={handleChange} />} title="Emojis">
         <Button
           type="text"
           shape="circle"

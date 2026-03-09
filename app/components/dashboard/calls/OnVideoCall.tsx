@@ -33,18 +33,18 @@ const OnCall = ({
   const socketRef = useRef<any>(null);
 
   const incomingCall = useSelector((state: any) => state.chat.incomingCall);
-  console.log("incomingCallllll",incomingCall);
+  console.log("incomingCallllll", incomingCall);
   const outgoingCall = useSelector((state: any) => state.chat.outgoingCall);
   const currentUserId = useSelector((state: any) => state.auth?._id);
   const currentUser = useSelector((state: any) => state.auth?.user);
 
   const localVideoRef = useRef<HTMLVideoElement | null>(null);
   const remoteVideoRef = useRef<HTMLVideoElement | null>(null);
-  const {data,}=useGetProfileDetails({userId: currentUserId})
+  const { data } = useGetProfileDetails({ filter: { userId: currentUserId } });
   const currentUserDisplayName = data?.data?.displayName;
   // console.log('yeeemeraprofile',currentUser_profile)
   const incomingCallType = incomingCall?.callType;
-  
+
   const pcRef = useRef<RTCPeerConnection | null>(null);
   const localStreamRef = useRef<MediaStream | null>(null);
 
@@ -216,11 +216,17 @@ const OnCall = ({
       senderId: currentUserId,
       receiverId: call.receiverId,
       senderName: currentUserDisplayName,
-      receiverName:
-      callType, // ← send callType so receiver knows what kind of call this is
+      receiverName: callType, // ← send callType so receiver knows what kind of call this is
       offer,
     });
-  }, [callType, currentUserId,currentUserDisplayName, currentUser, startMedia, setupPeer]);
+  }, [
+    callType,
+    currentUserId,
+    currentUserDisplayName,
+    currentUser,
+    startMedia,
+    setupPeer,
+  ]);
 
   // ── Incoming call accept ─────────────────────
   const acceptIncomingCall = useCallback(async () => {

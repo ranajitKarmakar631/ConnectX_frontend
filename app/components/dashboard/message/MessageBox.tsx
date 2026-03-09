@@ -9,8 +9,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { joinRoom } from "@/Redux/ReduxChat/chatSlice";
 import { useGetChatMessageList } from "@/service/messsages/messageService";
 import axios from "axios";
-import Lootie from 'lottie-react'
+import Lootie from "lottie-react";
 import Lottie from "lottie-react";
+import { Message } from "@/types";
+
 export interface ReduxMessage {
   id: string | number;
   chatId: string;
@@ -32,21 +34,20 @@ const MessageBox: React.FC<MessageBoxProps> = ({
 }) => {
   const dispatch = useDispatch();
   const senderId = useParams()?.userId as string;
-   const [emojiData, setEmojiData] = useState<any>(null);
+  const [emojiData, setEmojiData] = useState<any>(null);
 
   const loadEmoji = async () => {
     const res = await axios.get(
       "https://fonts.gstatic.com/s/e/notoemoji/latest/1f923/lottie.json",
       {
         withCredentials: false,
-      }
+      },
     );
 
     console.log("emoji data", res.data);
 
     setEmojiData(res.data);
   };
-
 
   const messageRef = useRef<HTMLDivElement | null>(null);
   const topObserverRef = useRef<HTMLDivElement | null>(null);
@@ -77,14 +78,12 @@ const MessageBox: React.FC<MessageBoxProps> = ({
 
   /* ───────── Merge + Sort + Deduplicate Messages ───────── */
   const sortedMessages = useMemo(() => {
-    const map = new Map<string, any>();
+    const map = new Map<string, Message>();
 
-
-
-    [...apiMessages, ...socketMessages].forEach((msg: any) => {
+    [...apiMessages, ...socketMessages].forEach((msg: Message) => {
       const uniqueKey =
         msg._id ||
-        msg.id ||
+        (msg.id as string) ||
         `${msg.senderId}-${msg.message}-${msg.createdAt || msg.timestamp}`;
 
       if (!map.has(uniqueKey)) {
@@ -93,16 +92,16 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     });
 
     return Array.from(map.values())
-      .map((msg: any) => ({
+      .map((msg: Message) => ({
         ...msg,
         time: msg.createdAt || msg.timestamp,
       }))
       .sort(
-        (a: any, b: any) =>
+        (a: Message, b: Message) =>
           new Date(a.createdAt || a.timestamp).getTime() -
           new Date(b.createdAt || b.timestamp).getTime(),
       );
-  }, [socketMessages]);
+  }, [apiMessages, socketMessages]);
 
   /* ───────── Join / Leave Room ───────── */
   useEffect(() => {
@@ -247,7 +246,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         </div>
       ) : (
         <>
-          {sortedMessages.map((message: any, index: number) => {
+          {sortedMessages.map((message: Message, index: number) => {
             const isUser = message.senderId === senderId;
             const isLast =
               index === sortedMessages.length - 1 ||
@@ -306,7 +305,10 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                         color: "#667788",
                       }}
                     >
-                      {formatTime(message.timestamp || message.createdAt)}
+                      {(message.timestamp || message.createdAt) &&
+                        formatTime(
+                          message.timestamp || message.createdAt || "",
+                        )}
                     </span>
                   </div>
                 </div>
@@ -321,17 +323,17 @@ const MessageBox: React.FC<MessageBoxProps> = ({
             </div>
           )}
           <div onClick={loadEmoji} style={{ cursor: "pointer" }}>
-      <div>hello</div>
+            <div>hello</div>
 
-      {emojiData && (
-        <Lottie
-          animationData={emojiData}
-          loop
-          autoplay
-          style={{ width: 30, display: "inline-block" }}
-        />
-      )}
-    </div>
+            {emojiData && (
+              <Lottie
+                animationData={emojiData}
+                loop
+                autoplay
+                style={{ width: 30, display: "inline-block" }}
+              />
+            )}
+          </div>
         </>
       )}
     </div>

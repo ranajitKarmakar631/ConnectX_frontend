@@ -17,17 +17,19 @@ const VideoCall = ({
   opponentProfile: any;
 }) => {
   const dispatch = useDispatch();
-  const {userId}= useParams()
-  
-   const { data: userData } = useGetProfileDetails({filter:{userId}});
+  const { userId } = useParams();
+
+  const { data: userData } = useGetProfileDetails({
+    filter: { userId: userId as string },
+  });
   const handleVideoOn = async () => {
     dispatch(
       startCall({
         chatId,
-        callType:'video',
+        callType: "video",
         receiverId: opponentProfile?.userId,
         senderName: userData?.data?.displayName,
-         receiverName: opponentProfile?.displayName || opponentProfile?.userName,
+        receiverName: opponentProfile?.displayName || opponentProfile?.userName,
       }),
     );
   };

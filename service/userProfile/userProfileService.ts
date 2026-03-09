@@ -4,13 +4,17 @@ import { BASE_API, QUERYKEYS } from "../queryKeys";
 
 const USER_PROFILE_API = `${BASE_API}/user-profile`;
 
-const getUserProfile = async (payload: any): Promise<any> => {
+const getUserProfile = async (payload: {
+  filter: { userId: string };
+}): Promise<any> => {
   const result = await axios.post(`${USER_PROFILE_API}/find`, payload);
 
   return result.data;
 };
 
-export const useGetProfileDetails = (payload: any) => {
+export const useGetProfileDetails = (payload: {
+  filter: { userId: string };
+}) => {
   return useQuery({
     queryKey: [QUERYKEYS.USER_PROFILE, payload], // VERY IMPORTANT
     queryFn: () => getUserProfile(payload),

@@ -7,9 +7,11 @@ import { SendOutlined } from "@ant-design/icons";
 import { useCreateMessage } from "@/service/messsages/messageService";
 import EmojiBox from "./emoji/EmojiBox";
 
+import { Chat } from "@/types";
+
 interface MessageInputProps {
   senderId: string;
-  selectedChat: any;
+  selectedChat: Chat;
 }
 
 const MessageInput: React.FC<MessageInputProps> = ({
@@ -19,9 +21,8 @@ const MessageInput: React.FC<MessageInputProps> = ({
   const [message, setMessage] = useState("");
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const isTypingRef = useRef(false);
-  const inputRef = useRef<any>(null);
+  const inputRef = useRef<any>(null); // Ant Design TextArea ref is complex, keeping any for now but could use TextAreaRef
 
-  const messageMutation = useCreateMessage();
   const chatId = selectedChat?._id;
 
   const canSend = message.trim().length > 0;
@@ -52,7 +53,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
   };
 
   // emoji select
-  const handleEmojiSelect = (emoji: any) => {
+  const handleEmojiSelect = (emoji: { native: string }) => {
     const newMessage = message + emoji.native;
 
     setMessage(newMessage);

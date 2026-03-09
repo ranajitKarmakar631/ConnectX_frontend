@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import React from "react";
 import { useAppDispatch } from "@/Redux/hooks";
 
-import z, { success } from "zod";
+import z from "zod";
 import { toFormikValidationSchema } from "zod-formik-adapter";
 import { loginSuccess } from "@/Redux/authSlice";
 const schema = z.object({
@@ -18,7 +18,7 @@ const LoginForm = () => {
 
   const router = useRouter();
   const loginMutation = useLoginUserMutation();
-  const handleSubmit = async (values: any) => {
+  const handleSubmit = async (values: z.infer<typeof schema>) => {
     try {
       const result = await loginMutation.mutateAsync(values);
 
@@ -30,9 +30,8 @@ const LoginForm = () => {
             user: result?.data,
           }),
         );
-        console.log("loging success",result?.data?._id);
-        if(result?.data?._id)
-        {
+        console.log("loging success", result?.data?._id);
+        if (result?.data?._id) {
           router.replace(`/chat/${result?.data?._id}`);
         }
       }

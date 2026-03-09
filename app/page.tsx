@@ -4,18 +4,20 @@ import { useEffect } from "react";
 import { useAppSelector } from "@/Redux/hooks";
 
 export default function Page() {
-  const { _id, isInitialized } = useAppSelector((state: any) => state.auth);
+  const { isAuthenticated, user, isInitialized } = useAppSelector(
+    (state: any) => state.auth,
+  );
   const router = useRouter();
 
   useEffect(() => {
     if (isInitialized) {
-      if (_id) {
-        router.replace(`/chat/${_id}`);
+      if (isAuthenticated && user?._id) {
+        router.replace(`/chat/${user._id}`);
       } else {
         router.replace("/login");
       }
     }
-  }, [isInitialized, _id, router]);
+  }, [isInitialized, isAuthenticated, user, router]);
 
   return null;
 }
