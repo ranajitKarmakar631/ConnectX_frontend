@@ -1,8 +1,10 @@
-name: Next.js CI/CD
+name: Next.js CI
 
 on:
   push:
-    branches: ["main", "dev"]
+    branches: ["main","dev"]
+  pull_request:
+    branches: ["main"]
 
 jobs:
   build:
@@ -12,22 +14,24 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Setup Node.js
+      - name: Setup Node
         uses: actions/setup-node@v3
         with:
           node-version: 18
           cache: "npm"
 
       - name: Install Dependencies
-        run: npm install
+        run: npm install --legacy-peer-deps
 
       - name: Run Lint
         run: npm run lint --if-present
 
-      - name: Build Next.js App
+      - name: Build Next.js
         run: npm run build
 
       - name: Verify Build
         run: |
-          echo "Checking .next build folder"
+          echo "Listing project files"
           ls -la
+          echo "Checking Next build folder"
+          ls -la .next
