@@ -1,7 +1,7 @@
 "use client";
 
 import Dashboard from "@/app/components/dashboard/Dashboard";
-import FingerPrint from "@/app/components/dashboard/fingerPrint/fingerPrint";
+// import FingerPrint from "@/app/components/dashboard/fingerPrint/fingerPrint";
 import NotificationButton from "@/app/components/dashboard/notification/NotificationButton";
 import SocketProvider from "@/app/SocketProvider";
 import { useRouter } from "next/navigation";
@@ -23,7 +23,7 @@ const Page = () => {
 
   return (
     <SocketProvider>
-      <FingerPrint/>
+      {/* <FingerPrint/> */}
       <Dashboard />
       <NotificationButton />
     </SocketProvider>

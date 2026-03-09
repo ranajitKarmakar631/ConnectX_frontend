@@ -34,36 +34,37 @@ function formatTime(date: string | number | Date) {
   return d.toLocaleDateString([], { month: "short", day: "numeric" });
 }
 
-
-
 function getInitials(name?: string) {
   if (!name) return "?";
-  return name.split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase();
+  return name
+    .split(" ")
+    .map((w) => w[0])
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
 }
 
 type FilterType = "All" | "Unread" | "Mentions";
 
-const ChatList: React.FC<ChatListProps> = ({
-  chatList,
-  onSelectChat,
-}) => {
+const ChatList: React.FC<ChatListProps> = ({ chatList, onSelectChat }) => {
   const [selectedId, setSelectedId] = useState<string | null>(
-    chatList?.[0]?._id ?? null
+    chatList?.[0]?._id ?? null,
   );
   const [search, setSearch] = useState("");
   const [activeFilter, setActiveFilter] = useState<FilterType>("All");
 
-  const filtered = chatList?.filter((item) => {
-    const nameMatch = item.opponentProfile?.displayName
-      ?.toLowerCase()
-      .includes(search.toLowerCase());
-    if (activeFilter === "Unread") return nameMatch && (item.unreadCount ?? 0) > 0;
-    return nameMatch;
-  });
+  const filtered =
+    chatList?.filter((item) => {
+      const nameMatch = item.opponentProfile?.displayName
+        ?.toLowerCase()
+        .includes(search.toLowerCase());
+      if (activeFilter === "Unread")
+        return nameMatch && (item.unreadCount ?? 0) > 0;
+      return nameMatch;
+    }) ?? [];
 
   return (
     <div className="flex flex-col h-screen w-full bg-white border-r border-slate-100 select-none">
-
       {/* ── Header ── */}
       <div className="flex items-center justify-between px-4 pt-5 pb-3">
         <span
@@ -78,8 +79,15 @@ const ChatList: React.FC<ChatListProps> = ({
             size="small"
             className="!text-slate-400 hover:!text-blue-500 !border-0 !w-8 !h-8 !flex !items-center !justify-center !rounded-lg"
             icon={
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+              >
                 <line x1="3" y1="6" x2="21" y2="6" />
                 <line x1="3" y1="12" x2="15" y2="12" />
                 <line x1="3" y1="18" x2="9" y2="18" />
@@ -157,7 +165,11 @@ const ChatList: React.FC<ChatListProps> = ({
                   status="success"
                   offset={[-3, 41]}
                   styles={{
-                    indicator: { width: 10, height: 10, boxShadow: "0 0 0 2px #fff" },
+                    indicator: {
+                      width: 10,
+                      height: 10,
+                      boxShadow: "0 0 0 2px #fff",
+                    },
                   }}
                 >
                   <Avatar
@@ -220,7 +232,9 @@ const ChatList: React.FC<ChatListProps> = ({
                     </Text>
                     {hasUnread && (
                       <span className="flex-shrink-0 min-w-[18px] h-[18px] bg-blue-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1.5">
-                        {(item.unreadCount ?? 0) > 99 ? "99+" : item.unreadCount}
+                        {(item.unreadCount ?? 0) > 99
+                          ? "99+"
+                          : item.unreadCount}
                       </span>
                     )}
                   </div>
@@ -232,8 +246,8 @@ const ChatList: React.FC<ChatListProps> = ({
       </div>
 
       {/* ── Footer / Current User ── */}
-      
-      <ChatFooter/>
+
+      <ChatFooter />
     </div>
   );
 };
