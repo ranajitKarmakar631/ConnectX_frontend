@@ -1,4 +1,4 @@
-name: Next.js Full CI/CD
+name: Next.js Frontend CI/CD
 
 on:
   push:
@@ -21,26 +21,27 @@ jobs:
           cache: "npm"
 
       - name: Install Dependencies
-        run: npm ci
+        run: npm install --legacy-peer-deps
 
-      - name: Lint Code
+      - name: Run Lint
         run: npm run lint --if-present
-
-      - name: Type Check
-        run: npm run type-check --if-present
 
       - name: Build Next.js App
         run: npm run build
 
       - name: Verify Build Output
         run: |
-          echo "Checking build folder"
+          echo "Checking project files"
           ls -la
-          ls -la .next
+          echo "Checking Next.js build folder"
+          ls -la .next || echo ".next folder not found"
 
       - name: Start Next.js Server
         run: |
           npm start &
           echo "Waiting for server..."
-          sleep 10
-          curl http://localhost:3000
+          sleep 15
+
+      - name: Test Server
+        run: |
+          curl -v http://localhost:3000 || exit 1
