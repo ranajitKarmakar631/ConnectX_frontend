@@ -22,29 +22,16 @@ const Dashboard = () => {
     data?.pages?.flatMap((pages: any) => pages.data.results) ?? [];
 
   const [selectChat, setSelectChat] = useState<any>(connections[0]);
-  const [providedChat, setprovidedChat] = useState<any>(connections[0]);
   // Controls whether the chat list panel is visible on mobile
   const [showChatList, setShowChatList] = useState<boolean>(true);
 
   const rowRef = useRef<HTMLTableRowElement | null>(null);
 
   useEffect(() => {
-    setprovidedChat(selectChat);
-  }, [selectChat]);
-
-  useEffect(() => {
-    const observer = new ResizeObserver((entries) => {
-      for (let entry of entries) {
-        console.log(entry.contentRect.height);
-      }
-    });
-
-    if (rowRef.current) {
-      observer.observe(rowRef.current);
+    if (connections.length > 0 && !selectChat) {
+      setSelectChat(connections[0]);
     }
-
-    return () => observer.disconnect();
-  }, []);
+  }, [connections, selectChat]);
 
   // On mobile, when a chat is selected, switch to the message view
   const handleSelectChat = (chat: any) => {
@@ -69,20 +56,13 @@ const Dashboard = () => {
         className="dashboard-row"
       >
         {/* Chat list sidebar – visible on md+ */}
-        <Col
-          xs={0}
-          sm={0}
-          md={6}
-          lg={6}
-          xl={6}
-          style={{ minHeight: "100vh" }}
-        >
+        <Col xs={0} sm={0} md={6} lg={6} xl={6} style={{ minHeight: "100vh" }}>
           <ChatList chatList={connections} onSelectChat={setSelectChat} />
         </Col>
 
         {/* Message area – visible on md+ */}
         <Col xs={0} sm={0} md={18} xl={18}>
-          <MessageMainContainer selectedChat={providedChat} />
+          <MessageMainContainer selectedChat={selectChat} />
         </Col>
       </Row>
 
@@ -95,10 +75,7 @@ const Dashboard = () => {
             <div className="mobile-topbar">
               <NotificationButton />
             </div>
-            <ChatList
-              chatList={connections}
-              onSelectChat={handleSelectChat}
-            />
+            <ChatList chatList={connections} onSelectChat={handleSelectChat} />
           </div>
         ) : (
           /* Message View */
@@ -114,7 +91,7 @@ const Dashboard = () => {
                 <span>Chats</span>
               </button>
             </div>
-            <MessageMainContainer selectedChat={providedChat} />
+            <MessageMainContainer selectedChat={selectChat} />
           </div>
         )}
       </div>

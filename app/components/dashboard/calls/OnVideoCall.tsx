@@ -4,6 +4,7 @@ import { useSocket } from "@/app/SocketProvider";
 import { createPeerConnection } from "@/service/peerService/peerService";
 import { useSelector } from "react-redux";
 import { convertObjectNameToString } from "@/uiHelper";
+import { useGetProfileDetails } from "@/service/userProfile/userProfileService";
 
 // ─────────────────────────────────────────────
 // Types
@@ -32,13 +33,16 @@ const OnCall = ({
   const socketRef = useRef<any>(null);
 
   const incomingCall = useSelector((state: any) => state.chat.incomingCall);
+  console.log("incomingCallllll",incomingCall);
   const outgoingCall = useSelector((state: any) => state.chat.outgoingCall);
   const currentUserId = useSelector((state: any) => state.auth?._id);
   const currentUser = useSelector((state: any) => state.auth?.user);
 
   const localVideoRef = useRef<HTMLVideoElement | null>(null);
   const remoteVideoRef = useRef<HTMLVideoElement | null>(null);
-
+  const {data,}=useGetProfileDetails({userId: currentUserId})
+  const currentUserDisplayName = data?.data?.displayName;
+  // console.log('yeeemeraprofile',currentUser_profile)
   const incomingCallType = incomingCall?.callType;
   
   const pcRef = useRef<RTCPeerConnection | null>(null);
@@ -207,16 +211,16 @@ const OnCall = ({
 
     const offer = await pc.createOffer();
     await pc.setLocalDescription(offer);
-
     socketRef.current.emit("start:calling", {
       chatId: call.chatId,
       senderId: currentUserId,
       receiverId: call.receiverId,
-      senderName: convertObjectNameToString(currentUser?.name),
+      senderName: currentUserDisplayName,
+      receiverName:
       callType, // ← send callType so receiver knows what kind of call this is
       offer,
     });
-  }, [callType, currentUserId, currentUser, startMedia, setupPeer]);
+  }, [callType, currentUserId,currentUserDisplayName, currentUser, startMedia, setupPeer]);
 
   // ── Incoming call accept ─────────────────────
   const acceptIncomingCall = useCallback(async () => {

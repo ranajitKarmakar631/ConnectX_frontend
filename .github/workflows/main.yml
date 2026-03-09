@@ -1,0 +1,33 @@
+name: Next.js CI/CD
+
+on:
+  push:
+    branches: ["main", "dev"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: "npm"
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Run Lint
+        run: npm run lint --if-present
+
+      - name: Build Next.js App
+        run: npm run build
+
+      - name: Verify Build
+        run: |
+          echo "Checking .next build folder"
+          ls -la

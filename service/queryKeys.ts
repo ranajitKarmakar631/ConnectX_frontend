@@ -5,6 +5,7 @@ export const QUERYKEYS = {
   CALL_CONNECTION: "calls_connection",
   MESSAGES:'messages',
   USER_ONLINE :'user_online',
+  CHAT_LAST_MESSAGE:'chat_last_message'
 };
 
 export const BASE_API =

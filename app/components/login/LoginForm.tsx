@@ -30,8 +30,11 @@ const LoginForm = () => {
             user: result?.data,
           }),
         );
-
-        router.replace(`/chat/${result.data._id}`);
+        console.log("loging success",result?.data?._id);
+        if(result?.data?._id)
+        {
+          router.replace(`/chat/${result?.data?._id}`);
+        }
       }
     } catch (error) {
       console.error("Login failed:", error);

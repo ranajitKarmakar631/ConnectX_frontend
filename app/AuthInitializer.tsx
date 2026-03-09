@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useAppDispatch } from "@/Redux/hooks";
-import { loginSuccess } from "@/Redux/authSlice";
+import { loginSuccess, setInitialized } from "@/Redux/authSlice";
 
 export default function AuthInitializer({
   children,
@@ -18,8 +18,10 @@ export default function AuthInitializer({
       dispatch(
         loginSuccess({
           user: JSON.parse(storedUser),
-        })
+        }),
       );
+    } else {
+      dispatch(setInitialized(true));
     }
   }, [dispatch]);
 

@@ -15,10 +15,26 @@ const getIsOnline = async (payload: any): Promise<any> => {
 };
 
 export const useGetUserOnline = (payload: any) => {
-  console.log('alllllllllllllllll', payload);
   return useQuery({
-    queryKey: [QUERYKEYS.USER_ONLINE, payload], // VERY IMPORTANT
+    queryKey: [QUERYKEYS.USER_ONLINE, payload], 
     queryFn: () => getIsOnline(payload),
-    // enabled: !!payload, // prevents auto-run if empty
   });
 };
+
+
+
+
+// const getLastMessage = async (payload: any): Promise<any> => {
+//   const result = await axios.post(
+//     `${USER_PROFILE_API}/last-message`,
+//     payload
+//   );
+//   return result.data;
+// };
+
+// export const useGetLastMessage = (payload: any) => {
+//   return useQuery({
+//     queryKey: [QUERYKEYS.CHAT_LAST_MESSAGE, payload],
+//     queryFn: () => getLastMessage(payload),
+//   });
+// };
