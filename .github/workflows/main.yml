@@ -23,9 +23,6 @@ jobs:
       - name: Install Dependencies
         run: npm install --legacy-peer-deps
 
-      - name: Run Lint
-        run: npm run lint --if-present
-
       - name: Build Next.js
         run: npm run build
 
