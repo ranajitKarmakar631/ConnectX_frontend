@@ -17,9 +17,10 @@ const ChatFooter = () => {
   const router = useRouter();
   const userId = useParams()?.userId as string;
 
-  const { data: userData } = useGetProfileDetails({filter:{userId}});
+  const { data: userData } = useGetProfileDetails({
+    filter: { userId },
+  });
   const userProfile = userData?.data;
-  console.log("this is my userProfile", userProfile)
   const { mutate: logoutUser, isPending } = useLogoutuser();
 
   const handleLogout = () => {

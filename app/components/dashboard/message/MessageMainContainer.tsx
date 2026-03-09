@@ -1,59 +1,3 @@
-// import React, { useEffect, useState } from "react";
-// import { useParams } from "next/navigation";
-// import ChatMessage from "../chat/ChatMessage";
-// import MessageHeader from "./MessageHeader";
-// import MessageInput from "./MessageInput";
-// import MessageBox from "./MessageBox";
-// import { useSelector } from "react-redux";
-// import { useSocket } from "@/app/SocketProvider";
-
-// const MessageMainContainer = ({ selectedChat }: { selectedChat: any }) => {
-//   const { userId } = useParams();
-//   const socket = useSocket ();
-//   if (!selectedChat) {
-//     return (
-//       <div
-//         style={{
-//           height: "100%",
-//           display: "flex",
-//           alignItems: "center",
-//           justifyContent: "center",
-//           color: "#999",
-//         }}
-//       >
-//         Select a chat to start messaging
-//       </div>
-//     );
-//   }
-//   const reduxIsTypingChat = useSelector((state :any)=>state.chat.typingChats as string[]);
-//   const [isTyping, setIsTyping]= useState(false)
-
-//   useEffect (()=>{
-//     console.log(reduxIsTypingChat);
-//     if(reduxIsTypingChat.includes(selectedChat?._id))
-//         setIsTyping(true);
-//     else
-//         setIsTyping(false);
-//   },[reduxIsTypingChat])
-
-//   return (
-//     <div style={{
-//       display:'flex',
-//       height:'100vh',
-//       justifyContent:'space-between',
-//       flexDirection:'column'
-//     }} >
-//       <MessageHeader chatId={selectedChat._id} isTyping={isTyping} opponentProfile={selectedChat.opponentProfile} />
-//       <div style={{ flex: 1, overflow: 'hidden' }}>
-//         <MessageBox selectedChat={selectedChat}/>
-//       </div>
-//       <MessageInput senderId={userId as string} selectedChat={selectedChat} />
-//     </div>
-//   );
-// };
-
-// export default MessageMainContainer;
-
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import MessageHeader from "./MessageHeader";
@@ -63,23 +7,24 @@ import { useSelector } from "react-redux";
 import { useSocket } from "@/app/SocketProvider";
 import { useGetUserOnline } from "@/service/redis/redisService";
 
-const MessageMainContainer = ({ selectedChat }: { selectedChat: any }) => {
+import { Chat } from "@/types";
+
+const MessageMainContainer = ({
+  selectedChat,
+}: {
+  selectedChat: Chat | null;
+}) => {
   const { userId } = useParams();
-  const socket = useSocket();
-  // alert(selectedChat?._id );
-  console.log('yeee tera selected achat', selectedChat);
-  const { data: onlineStatus } = useGetUserOnline({ _id:selectedChat?.opponentProfile?._id });
-  // console.log("onleeeeeeeeeeeeeeeeeeeeeeeeeeeee", onlineStatus);
+  const { data: onlineStatus } = useGetUserOnline({
+    _id: selectedChat?.opponentProfile?._id,
+  });
   const reduxIsTypingChat = useSelector(
     (state: any) => state.chat.typingChats as string[],
   );
-  const [isTyping, setIsTyping] = useState(false);
 
-  useEffect(() => {
-    console.log(reduxIsTypingChat);
-    if (reduxIsTypingChat.includes(selectedChat?._id)) setIsTyping(true);
-    else setIsTyping(false);
-  }, [reduxIsTypingChat, selectedChat?._id]);
+  const isTyping = selectedChat?._id
+    ? reduxIsTypingChat.includes(selectedChat._id)
+    : false;
 
   /* ── No chat selected ── */
   if (!selectedChat) {
@@ -164,7 +109,7 @@ const MessageMainContainer = ({ selectedChat }: { selectedChat: any }) => {
         chatId={selectedChat._id}
         isTyping={isTyping}
         opponentProfile={selectedChat.opponentProfile}
-        isOnline={onlineStatus?.data?.isOnline}
+        isOnline={!!onlineStatus?.data?.isOnline}
       />
 
       {/* Message area — flex-1 with hidden overflow so MessageBox scrolls internally */}
@@ -179,7 +124,10 @@ const MessageMainContainer = ({ selectedChat }: { selectedChat: any }) => {
       </div>
 
       {/* Input */}
-      <MessageInput senderId={userId as string} selectedChat={selectedChat} />
+      <MessageInput
+        senderId={userId as string}
+        selectedChat={selectedChat as Chat}
+      />
     </div>
   );
 };

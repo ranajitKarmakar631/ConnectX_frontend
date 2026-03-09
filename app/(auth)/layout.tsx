@@ -9,19 +9,19 @@ export default function AuthLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { isAuthenticated } = useAppSelector(
-    (state: any) => state.auth
+  const { isAuthenticated, isInitialized } = useAppSelector(
+    (state: any) => state.auth,
   );
 
   const router = useRouter();
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (isInitialized && !isAuthenticated) {
       router.replace("/login");
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, isInitialized, router]);
 
-  if (!isAuthenticated) return null;
+  if (!isInitialized || !isAuthenticated) return null;
 
   return <>{children}</>;
 }

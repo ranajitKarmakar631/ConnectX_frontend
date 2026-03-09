@@ -1,14 +1,17 @@
 import React, { useRef, useState } from "react";
-import { Mic, Paperclip, Smile } from "lucide-react";
+import { Mic, Paperclip } from "lucide-react";
 import { socketService } from "@/service/socket/socketService";
 import TextArea from "antd/es/input/TextArea";
 import { Button } from "antd";
 import { SendOutlined } from "@ant-design/icons";
 import { useCreateMessage } from "@/service/messsages/messageService";
+import EmojiBox from "./emoji/EmojiBox";
+
+import { Chat } from "@/types";
 
 interface MessageInputProps {
   senderId: string;
-  selectedChat: any;
+  selectedChat: Chat;
 }
 
 const MessageInput: React.FC<MessageInputProps> = ({
@@ -18,11 +21,13 @@ const MessageInput: React.FC<MessageInputProps> = ({
   const [message, setMessage] = useState("");
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const isTypingRef = useRef(false);
+  const inputRef = useRef<any>(null); // Ant Design TextArea ref is complex, keeping any for now but could use TextAreaRef
 
-  const messageMutation = useCreateMessage();
   const chatId = selectedChat?._id;
+
   const canSend = message.trim().length > 0;
 
+  // typing indicator
   const handleTyping = (value: string) => {
     if (!chatId) return;
 
@@ -41,10 +46,24 @@ const MessageInput: React.FC<MessageInputProps> = ({
     }, 2000);
   };
 
+  // input change
   const handleChange = (value: string) => {
     setMessage(value);
     handleTyping(value);
   };
+
+  // emoji select
+  const handleEmojiSelect = (emoji: { native: string }) => {
+    const newMessage = message + emoji.native;
+
+    setMessage(newMessage);
+    handleTyping(newMessage);
+
+    // focus back to input
+    inputRef.current?.focus();
+  };
+
+  // send message
   const handleSend = async () => {
     if (!canSend || !chatId) return;
 
@@ -59,15 +78,14 @@ const MessageInput: React.FC<MessageInputProps> = ({
     isTypingRef.current = false;
 
     socketService.emit("send-message", payload);
-    await messageMutation.mutateAsync({
-      chatId,
-      message,
-      senderId,
-    });
 
     setMessage("");
+
+    // focus input again
+    inputRef.current?.focus();
   };
 
+  // enter to send
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -93,6 +111,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
           borderRadius: "24px",
         }}
       >
+        {/* attachment */}
         <Button
           type="text"
           shape="circle"
@@ -100,14 +119,12 @@ const MessageInput: React.FC<MessageInputProps> = ({
           style={{ color: "#54656f" }}
         />
 
-        <Button
-          type="text"
-          shape="circle"
-          icon={<Smile size={20} />}
-          style={{ color: "#54656f" }}
-        />
+        {/* emoji picker */}
+        <EmojiBox handleChange={handleEmojiSelect} />
 
+        {/* message input */}
         <TextArea
+          ref={inputRef}
           value={message}
           onChange={(e) => handleChange(e.target.value)}
           onKeyDown={handleKeyDown}
@@ -121,6 +138,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
           }}
         />
 
+        {/* send button */}
         {canSend ? (
           <Button
             onClick={handleSend}

@@ -1,11 +1,8 @@
-'use client'
-import ProtectedRoute from "@/app/components/protectedRoute";
+"use client";
 import React from "react";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
-  return (
-    <ProtectedRoute>{children}</ProtectedRoute>
-  );
+  return <>{children}</>;
 };
 
 export default Layout;

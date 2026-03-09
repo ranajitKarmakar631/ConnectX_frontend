@@ -1,0 +1,34 @@
+name: Next.js CI
+
+on:
+  push:
+    branches: ["main", "dev"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+          cache: "npm"
+
+      - name: Install Dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Build Next.js
+        run: npm run build
+
+      - name: Verify Build
+        run: |
+          echo "Listing project files"
+          ls -la
+          echo "Checking Next build folder"
+          ls -la .next
