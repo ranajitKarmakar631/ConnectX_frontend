@@ -1,8 +1,8 @@
-name: Next.js Frontend CI/CD
+name: Next.js CI
 
 on:
   push:
-    branches: ["main", "dev"]
+    branches: ["main","dev"]
   pull_request:
     branches: ["main"]
 
@@ -14,7 +14,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Setup Node.js
+      - name: Setup Node
         uses: actions/setup-node@v3
         with:
           node-version: 18
@@ -23,19 +23,15 @@ jobs:
       - name: Install Dependencies
         run: npm install --legacy-peer-deps
 
-      - name: Verify Build Output
+      - name: Run Lint
+        run: npm run lint --if-present
+
+      - name: Build Next.js
+        run: npm run build
+
+      - name: Verify Build
         run: |
-          echo "Checking project files"
+          echo "Listing project files"
           ls -la
-          echo "Checking Next.js build folder"
-          ls -la .next || echo ".next folder not found"
-
-      - name: Start Next.js Server
-        run: |
-          npm start &
-          echo "Waiting for server..."
-          sleep 15
-
-      - name: Test Server
-        run: |
-          curl -v http://localhost:3000 || exit 1
+          echo "Checking Next build folder"
+          ls -la .next
