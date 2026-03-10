@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { BASE_API, QUERYKEYS } from "../queryKeys";
 
 const USER_API = `${BASE_API}/users`;
@@ -84,7 +84,7 @@ export const useLoginUserMutation = () => {
   });
 };
 
-const userLogout = async (): Promise<any> => {
+const userLogout = async (): Promise<{ success: boolean; message: string }> => {
   const response = await axios.post(`${USER_API}/logout`);
   return response.data; // VERY IMPORTANT
 };

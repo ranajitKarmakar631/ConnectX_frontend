@@ -6,6 +6,8 @@ import { useSocket } from "@/app/SocketProvider";
 import { useDispatch, useSelector } from "react-redux";
 import { createPeerConnection } from "@/service/peerService/peerService";
 import { startCall } from "@/Redux/ReduxChat/chatSlice";
+import { useGetProfileDetails } from "@/service/userProfile/userProfileService";
+import { useParams } from "next/navigation";
 
 const VideoCall = ({
   opponentProfile,
@@ -15,13 +17,18 @@ const VideoCall = ({
   opponentProfile: any;
 }) => {
   const dispatch = useDispatch();
+  const { userId } = useParams();
 
+  const { data: userData } = useGetProfileDetails({
+    filter: { userId: userId as string },
+  });
   const handleVideoOn = async () => {
     dispatch(
       startCall({
         chatId,
-        callType:'video',
+        callType: "video",
         receiverId: opponentProfile?.userId,
+        senderName: userData?.data?.displayName,
         receiverName: opponentProfile?.displayName || opponentProfile?.userName,
       }),
     );

@@ -140,8 +140,10 @@ dayjs.extend(relativeTime);
 import AudioCall from "../calls/AudioCall";
 import VideoCall from "../calls/VideoCall";
 
+import { User } from "@/types";
+
 interface ChatHeaderProps {
-  opponentProfile: any;
+  opponentProfile: User;
 }
 
 export const formatLastSeen = (date: string | Date): string => {
@@ -153,7 +155,7 @@ export const formatLastSeen = (date: string | Date): string => {
     return `Last seen today at ${lastSeen.format("hh:mm A")}`;
   if (lastSeen.isSame(now.subtract(1, "day"), "day"))
     return `Last seen yesterday at ${lastSeen.format("hh:mm A")}`;
-  if (now.diff(lastSeen, "day") < 7) return `Last seen ${lastSeen.fromNow()}`;
+  if (now.diff(lastSeen, "day") < 7) return `Last seen ${lastSeen?.fromNow()}`;
   return `Last seen on ${lastSeen.format("DD MMM YYYY")}`;
 };
 

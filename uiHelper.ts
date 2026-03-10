@@ -1,4 +1,9 @@
-export const convertObjectNameToString = (name: any): string => {
+export const convertObjectNameToString = (
+  name:
+    | { firstName?: string; first?: string; lastName?: string; last?: string }
+    | null
+    | undefined,
+): string => {
   if (!name) return "Unknown";
 
   const capitalize = (str: string) =>
@@ -9,9 +14,18 @@ export const convertObjectNameToString = (name: any): string => {
 
   if (!firstName && !lastName) return "Unknown";
 
-  return [firstName, lastName].filter(Boolean).map(capitalize).join(" ");
+  return [firstName, lastName]
+    .filter((s): s is string => !!s)
+    .map(capitalize)
+    .join(" ");
 };
 
-export const getInitials = (name: string) => {
-  return name?.split(" ")?.map(word => word[0])?.join("")?.toUpperCase();
+export const getInitials = (name: string | null | undefined) => {
+  return (
+    name
+      ?.split(" ")
+      ?.map((word: string) => word[0])
+      ?.join("")
+      ?.toUpperCase() || ""
+  );
 };

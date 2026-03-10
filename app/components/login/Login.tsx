@@ -1,7 +1,11 @@
-import React from 'react';
-import LoginForm from './LoginForm';
-import { Card, Typography, Divider, Button, Space } from 'antd';
-import { GoogleOutlined, FacebookOutlined, MessageOutlined } from '@ant-design/icons';
+import React from "react";
+import LoginForm from "./LoginForm";
+import { Card, Typography, Divider, Button, Space } from "antd";
+import {
+  GoogleOutlined,
+  FacebookOutlined,
+  MessageOutlined,
+} from "@ant-design/icons";
 
 const { Title, Text, Link } = Typography;
 
@@ -16,7 +20,7 @@ const Login = () => {
 
       {/* Main container */}
       <div className="relative w-full max-w-md z-10">
-        <Card 
+        <Card
           className="backdrop-blur-xl bg-white/90 rounded-3xl shadow-2xl border-white/20"
           bordered={false}
         >
@@ -25,11 +29,11 @@ const Login = () => {
             <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl mb-4 shadow-lg">
               <MessageOutlined className="text-white text-3xl" />
             </div>
-            <Title 
-              level={2} 
+            <Title
+              level={2}
               className="!mb-2 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent"
             >
-              Let's Talk
+              Let&apos;s Talk
             </Title>
             <Text type="secondary" className="text-sm">
               Welcome back! Sign in to continue your conversations
@@ -48,17 +52,17 @@ const Login = () => {
 
           {/* Social Login Buttons */}
           <Space direction="vertical" size="middle" className="w-full">
-            <Button 
-              icon={<GoogleOutlined />} 
-              size="large" 
+            <Button
+              icon={<GoogleOutlined />}
+              size="large"
               block
               className="!rounded-xl !h-11 hover:!shadow-md transition-all duration-200 hover:-translate-y-0.5"
             >
               <span className="font-medium">Continue with Google</span>
             </Button>
-            <Button 
-              icon={<FacebookOutlined />} 
-              size="large" 
+            <Button
+              icon={<FacebookOutlined />}
+              size="large"
               block
               className="!rounded-xl !h-11 hover:!shadow-md transition-all duration-200 hover:-translate-y-0.5"
             >
@@ -69,7 +73,7 @@ const Login = () => {
           {/* Sign Up Link */}
           <div className="mt-6 text-center">
             <Text type="secondary">
-              Don't have an account?{' '}
+              Don&apos;t have an account?{" "}
               <Link href="/signup" className="font-semibold">
                 Sign up for free
               </Link>

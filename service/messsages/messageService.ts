@@ -1,9 +1,12 @@
 import axios from "axios";
-import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { BASE_API, QUERYKEYS } from "../queryKeys";
 
-
-const MESSAGE_API= `${BASE_API}/messages`
+const MESSAGE_API = `${BASE_API}/messages`;
 export interface MessagePayload {
   senderId?: string;
   message?: string;
@@ -12,8 +15,8 @@ export interface MessagePayload {
 
 const createMessage = async (
   payload: MessagePayload,
-): Promise<void> => {
-  const response = await axios.post<any>(
+): Promise<{ success: boolean; data: any }> => {
+  const response = await axios.post<{ success: boolean; data: any }>(
     `${MESSAGE_API}/create`,
     payload,
   );
@@ -23,10 +26,10 @@ const createMessage = async (
 export const useCreateMessage = () => {
   const queryClient = useQueryClient();
 
-  return useMutation<any, Error, any>({
+  return useMutation({
     mutationFn: createMessage,
 
-    onSuccess: (data: any) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: [QUERYKEYS.MESSAGES],
       });
@@ -34,32 +37,24 @@ export const useCreateMessage = () => {
   });
 };
 
-
-
 const getChatMessage = async (
   payload: any,
-  pageParam: number
+  pageParam: number,
 ): Promise<any> => {
-
-  const result = await axios.post<any>(
-    `${MESSAGE_API}/list`,
-    {
-      ...payload,
-      page: pageParam,
-    }
-  );
+  const result = await axios.post<any>(`${MESSAGE_API}/list`, {
+    ...payload,
+    page: pageParam,
+  });
   return result.data;
 };
 
 export const useGetChatMessageList = (payload: any) => {
   return useInfiniteQuery({
     queryKey: [QUERYKEYS.MESSAGES, payload],
-    queryFn: ({ pageParam = 1 }) =>
-      getChatMessage(payload, pageParam),
+    queryFn: ({ pageParam = 1 }) => getChatMessage(payload, pageParam),
     initialPageParam: 1,
     getNextPageParam: (lastPage) => {
-      const { currentPage, totalPages } =
-        lastPage?.data?.pagination;
+      const { currentPage, totalPages } = lastPage?.data?.pagination;
 
       if (currentPage < totalPages) {
         return currentPage + 1;
@@ -70,7 +65,7 @@ export const useGetChatMessageList = (payload: any) => {
     // 🔥 THIS IS THE MAGIC
     select: (data) => {
       return data.pages.flatMap(
-        (page: any) => page.data.results
+        (page: { data: { results: any[] } }) => page.data.results,
       );
     },
   });

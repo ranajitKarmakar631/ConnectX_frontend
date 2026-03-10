@@ -7,7 +7,7 @@ const NotificationButton = () => {
   const [isDragging, setIsDragging] = useState(false);
   const dragRef = useRef<{ offsetX: number; offsetY: number } | null>(null);
 
-  const handleMouseDown = (e: React.MouseEvent) => {
+  const handleMouseDown = (e: React.MouseEvent | React.TouchEvent | any) => {
     setIsDragging(true);
     dragRef.current = {
       offsetX: e.clientX - position.x,
@@ -15,7 +15,7 @@ const NotificationButton = () => {
     };
   };
 
-  const handleMouseMove = (e: MouseEvent) => {
+  const handleMouseMove = (e: MouseEvent | TouchEvent | any) => {
     if (!isDragging || !dragRef.current) return;
 
     setPosition({

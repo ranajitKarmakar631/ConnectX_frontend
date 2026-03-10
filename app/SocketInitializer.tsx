@@ -23,7 +23,6 @@ export default function SocketInitializer({
       state.chat.outgoingCall?.callType || state.chat.incomingCall?.callType,
   );
 
-  console.log("yeeeeeeeeeeeeeee", callType);
   const socket = useSocket();
 
   useEffect(() => {
