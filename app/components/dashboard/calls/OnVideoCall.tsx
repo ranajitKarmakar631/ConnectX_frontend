@@ -5,6 +5,7 @@ import { createPeerConnection } from "@/service/peerService/peerService";
 import { useSelector } from "react-redux";
 import { convertObjectNameToString } from "@/uiHelper";
 import { useGetProfileDetails } from "@/service/userProfile/userProfileService";
+import { audioCircleBtn, CameraIcon, CameraOffIcon, circleBtn, MicIcon, MicOffIcon, PhoneEndIcon, PhoneIcon, Spinner } from "@/icons/Icons";
 
 // ─────────────────────────────────────────────
 // Types
@@ -33,8 +34,9 @@ const OnCall = ({
   const socketRef = useRef<any>(null);
 
   const incomingCall = useSelector((state: any) => state.chat.incomingCall);
-  console.log("incomingCallllll", incomingCall);
+  // console.log("incomingCallllll", incomingCall);
   const outgoingCall = useSelector((state: any) => state.chat.outgoingCall);
+  // console.log('outgoingCallllll',outgoingCall);
   const currentUserId = useSelector((state: any) => state.auth?._id);
   const currentUser = useSelector((state: any) => state.auth?.user);
 
@@ -216,7 +218,7 @@ const OnCall = ({
       senderId: currentUserId,
       receiverId: call.receiverId,
       senderName: currentUserDisplayName,
-      receiverName: callType, // ← send callType so receiver knows what kind of call this is
+      callType: callType, // ← send callType so receiver knows what kind of call this is
       offer,
     });
   }, [
@@ -633,265 +635,74 @@ const OnCall = ({
   // Render: Video Call UI
   // ─────────────────────────────────────────────
   return (
-    <div
-      style={{
-        position: "relative",
-        width: "100%",
-        height: "75vh",
-        minHeight: 480,
-        background: "#0f0f0f",
-        borderRadius: 24,
-        overflow: "hidden",
-        fontFamily: "'Inter', sans-serif",
-        boxShadow: "0 32px 80px rgba(0,0,0,0.6)",
-      }}
-    >
+    <div style={{ position: "relative", width: "100%", height: "75vh", minHeight: 480, background: "#0f0f0f", borderRadius: 24, overflow: "hidden", fontFamily: "'Inter', sans-serif", boxShadow: "0 32px 80px rgba(0,0,0,0.6)" }}>
+
       {/* Remote Video */}
-      <video
-        ref={remoteVideoRef}
-        autoPlay
-        playsInline
-        style={{
-          position: "absolute",
-          inset: 0,
-          width: "100%",
-          height: "100%",
-          objectFit: "cover",
-          background: "#000",
-        }}
-      />
+      <video ref={remoteVideoRef} autoPlay playsInline style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", background: "#000" }} />
 
       {/* Gradient overlay */}
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          background:
-            "linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, transparent 35%, transparent 60%, rgba(0,0,0,0.75) 100%)",
-          pointerEvents: "none",
-        }}
-      />
+      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, transparent 35%, transparent 60%, rgba(0,0,0,0.75) 100%)", pointerEvents: "none" }} />
 
       {/* No remote stream placeholder */}
       {!remoteStream && (
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 16,
-          }}
-        >
-          <div
-            style={{
-              position: "relative",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            {!isCallActive &&
-              !isAccepting &&
-              incomingCall &&
-              [1, 2, 3].map((i) => (
-                <div
-                  key={i}
-                  style={{
-                    position: "absolute",
-                    width: 96,
-                    height: 96,
-                    borderRadius: "50%",
-                    border: "2px solid rgba(99,102,241,0.4)",
-                    animation: "ringPulse 2s ease-out infinite",
-                    animationDelay: `${i * 0.5}s`,
-                  }}
-                />
-              ))}
-            <div
-              style={{
-                width: 96,
-                height: 96,
-                borderRadius: "50%",
-                background: "linear-gradient(135deg, #6366f1, #8b5cf6)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: 40,
-                color: "#fff",
-                fontWeight: 700,
-                boxShadow: "0 0 0 8px rgba(99,102,241,0.2)",
-                position: "relative",
-                zIndex: 1,
-              }}
-            >
+        <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16 }}>
+
+          <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center" }}>
+
+            {!isCallActive && !isAccepting && incomingCall && [1, 2, 3].map((i) => (
+              <div key={i} style={{ position: "absolute", width: 96, height: 96, borderRadius: "50%", border: "2px solid rgba(99,102,241,0.4)", animation: "ringPulse 2s ease-out infinite", animationDelay: `${i * 0.5}s` }} />
+            ))}
+
+            <div style={{ width: 96, height: 96, borderRadius: "50%", background: "linear-gradient(135deg, #6366f1, #8b5cf6)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 40, color: "#fff", fontWeight: 700, boxShadow: "0 0 0 8px rgba(99,102,241,0.2)", position: "relative", zIndex: 1 }}>
               {callerName?.[0]?.toUpperCase() || "?"}
             </div>
+
           </div>
-          <p
-            style={{ color: "#fff", fontSize: 22, fontWeight: 600, margin: 0 }}
-          >
-            {callerName}
+
+          <p style={{ color: "#fff", fontSize: 22, fontWeight: 600, margin: 0 }}>{callerName}</p>
+
+          <p style={{ color: "rgba(255,255,255,0.5)", fontSize: 14, margin: 0 }}>
+            {isAccepting ? "Connecting..." : isCallActive ? "Connecting..." : incomingCall ? "Incoming video call" : "Calling..."}
           </p>
-          <p
-            style={{ color: "rgba(255,255,255,0.5)", fontSize: 14, margin: 0 }}
-          >
-            {isAccepting
-              ? "Connecting..."
-              : isCallActive
-                ? "Connecting..."
-                : incomingCall
-                  ? "Incoming video call"
-                  : "Calling..."}
-          </p>
+
         </div>
       )}
 
       {/* Top bar */}
-      <div
-        style={{
-          position: "absolute",
-          top: 20,
-          left: 0,
-          right: 0,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          padding: "0 24px",
-          zIndex: 10,
-        }}
-      >
+      <div style={{ position: "absolute", top: 20, left: 0, right: 0, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 24px", zIndex: 10 }}>
+
         <div>
-          <p
-            style={{
-              color: "#fff",
-              fontWeight: 600,
-              fontSize: 16,
-              margin: 0,
-              textShadow: "0 1px 4px rgba(0,0,0,0.6)",
-            }}
-          >
-            {callerName}
-          </p>
-          <p
-            style={{ color: "rgba(255,255,255,0.6)", fontSize: 12, margin: 0 }}
-          >
-            {isConnected
-              ? formatDuration(callDuration)
-              : isAccepting || isCallActive
-                ? "Connecting..."
-                : ""}
-          </p>
+          <p style={{ color: "#fff", fontWeight: 600, fontSize: 16, margin: 0, textShadow: "0 1px 4px rgba(0,0,0,0.6)" }}>{callerName}</p>
+          <p style={{ color: "rgba(255,255,255,0.6)", fontSize: 12, margin: 0 }}>{isConnected ? formatDuration(callDuration) : isAccepting || isCallActive ? "Connecting..." : ""}</p>
         </div>
-        <div
-          style={{
-            background: isConnected
-              ? "rgba(34,197,94,0.2)"
-              : "rgba(234,179,8,0.2)",
-            border: `1px solid ${isConnected ? "rgba(34,197,94,0.5)" : "rgba(234,179,8,0.5)"}`,
-            borderRadius: 20,
-            padding: "4px 12px",
-            display: "flex",
-            alignItems: "center",
-            gap: 6,
-          }}
-        >
-          <div
-            style={{
-              width: 7,
-              height: 7,
-              borderRadius: "50%",
-              background: isConnected ? "#22c55e" : "#eab308",
-            }}
-          />
-          <span
-            style={{
-              color: isConnected ? "#22c55e" : "#eab308",
-              fontSize: 12,
-              fontWeight: 500,
-            }}
-          >
-            {isConnected ? "Live" : "Waiting"}
-          </span>
+
+        <div style={{ background: isConnected ? "rgba(34,197,94,0.2)" : "rgba(234,179,8,0.2)", border: `1px solid ${isConnected ? "rgba(34,197,94,0.5)" : "rgba(234,179,8,0.5)"}`, borderRadius: 20, padding: "4px 12px", display: "flex", alignItems: "center", gap: 6 }}>
+          <div style={{ width: 7, height: 7, borderRadius: "50%", background: isConnected ? "#22c55e" : "#eab308" }} />
+          <span style={{ color: isConnected ? "#22c55e" : "#eab308", fontSize: 12, fontWeight: 500 }}>{isConnected ? "Live" : "Waiting"}</span>
         </div>
+
       </div>
 
       {/* Local PiP */}
-      <div
-        style={{
-          position: "absolute",
-          bottom: 110,
-          right: 20,
-          width: 130,
-          height: 90,
-          borderRadius: 16,
-          overflow: "hidden",
-          border: "2px solid rgba(255,255,255,0.15)",
-          background: "#1a1a2e",
-          boxShadow: "0 8px 32px rgba(0,0,0,0.5)",
-          zIndex: 10,
-        }}
-      >
-        <video
-          ref={localVideoRef}
-          autoPlay
-          muted
-          playsInline
-          style={{
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-            display: isCameraOff ? "none" : "block",
-          }}
-        />
+      <div style={{ position: "absolute", bottom: 110, right: 20, width: 130, height: 90, borderRadius: 16, overflow: "hidden", border: "2px solid rgba(255,255,255,0.15)", background: "#1a1a2e", boxShadow: "0 8px 32px rgba(0,0,0,0.5)", zIndex: 10 }}>
+
+        <video ref={localVideoRef} autoPlay muted playsInline style={{ width: "100%", height: "100%", objectFit: "cover", display: isCameraOff ? "none" : "block" }} />
+
         {isCameraOff && (
-          <div
-            style={{
-              width: "100%",
-              height: "100%",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              color: "rgba(255,255,255,0.4)",
-              fontSize: 11,
-            }}
-          >
+          <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "rgba(255,255,255,0.4)", fontSize: 11 }}>
             Camera off
           </div>
         )}
-        <div
-          style={{
-            position: "absolute",
-            bottom: 4,
-            left: 6,
-            background: "rgba(0,0,0,0.5)",
-            borderRadius: 6,
-            padding: "1px 6px",
-            color: "rgba(255,255,255,0.8)",
-            fontSize: 10,
-            fontWeight: 500,
-          }}
-        >
+
+        <div style={{ position: "absolute", bottom: 4, left: 6, background: "rgba(0,0,0,0.5)", borderRadius: 6, padding: "1px 6px", color: "rgba(255,255,255,0.8)", fontSize: 10, fontWeight: 500 }}>
           You
         </div>
+
       </div>
 
       {/* Controls */}
-      <div
-        style={{
-          position: "absolute",
-          bottom: 24,
-          left: 0,
-          right: 0,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: 16,
-          zIndex: 10,
-        }}
-      >
+      <div style={{ position: "absolute", bottom: 24, left: 0, right: 0, display: "flex", alignItems: "center", justifyContent: "center", gap: 16, zIndex: 10 }}>
+
         {isCallActive && (
           <button onClick={toggleMute} style={circleBtn(isMuted)}>
             {isMuted ? <MicOffIcon color="#ef4444" /> : <MicIcon />}
@@ -899,60 +710,12 @@ const OnCall = ({
         )}
 
         {!isCallActive && incomingCall && (
-          <button
-            onClick={acceptIncomingCall}
-            disabled={isAccepting}
-            style={{
-              height: 56,
-              padding: "0 28px",
-              borderRadius: 28,
-              border: "none",
-              background: isAccepting
-                ? "rgba(34,197,94,0.5)"
-                : "linear-gradient(135deg, #22c55e, #16a34a)",
-              color: "#fff",
-              fontWeight: 600,
-              fontSize: 15,
-              cursor: isAccepting ? "not-allowed" : "pointer",
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
-              boxShadow: "0 4px 20px rgba(34,197,94,0.4)",
-              outline: "none",
-              transition: "all 0.2s",
-            }}
-          >
-            {isAccepting ? (
-              <>
-                <Spinner /> Connecting...
-              </>
-            ) : (
-              <>
-                <PhoneIcon /> Accept
-              </>
-            )}
+          <button onClick={acceptIncomingCall} disabled={isAccepting} style={{ height: 56, padding: "0 28px", borderRadius: 28, border: "none", background: isAccepting ? "rgba(34,197,94,0.5)" : "linear-gradient(135deg, #22c55e, #16a34a)", color: "#fff", fontWeight: 600, fontSize: 15, cursor: isAccepting ? "not-allowed" : "pointer", display: "flex", alignItems: "center", gap: 8, boxShadow: "0 4px 20px rgba(34,197,94,0.4)", outline: "none", transition: "all 0.2s" }}>
+            {isAccepting ? (<><Spinner /> Connecting...</>) : (<><PhoneIcon /> Accept</>)}
           </button>
         )}
 
-        <button
-          onClick={hangup}
-          style={{
-            height: 56,
-            padding: "0 28px",
-            borderRadius: 28,
-            border: "none",
-            background: "linear-gradient(135deg, #ef4444, #dc2626)",
-            color: "#fff",
-            fontWeight: 600,
-            fontSize: 15,
-            cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            gap: 8,
-            boxShadow: "0 4px 20px rgba(239,68,68,0.4)",
-            outline: "none",
-          }}
-        >
+        <button onClick={hangup} style={{ height: 56, padding: "0 28px", borderRadius: 28, border: "none", background: "linear-gradient(135deg, #ef4444, #dc2626)", color: "#fff", fontWeight: 600, fontSize: 15, cursor: "pointer", display: "flex", alignItems: "center", gap: 8, boxShadow: "0 4px 20px rgba(239,68,68,0.4)", outline: "none" }}>
           <PhoneEndIcon /> {isCallActive ? "End Call" : "Decline"}
         </button>
 
@@ -961,168 +724,15 @@ const OnCall = ({
             {isCameraOff ? <CameraOffIcon color="#ef4444" /> : <CameraIcon />}
           </button>
         )}
+
       </div>
 
       <style>{`
-        @keyframes ringPulse { 0% { transform:scale(1);opacity:.7; } 100% { transform:scale(2.8);opacity:0; } }
-        @keyframes spin { to { transform:rotate(360deg); } }
-      `}</style>
+    @keyframes ringPulse { 0% { transform:scale(1);opacity:.7; } 100% { transform:scale(2.8);opacity:0; } }
+    @keyframes spin { to { transform:rotate(360deg); } }
+  `}</style>
+
     </div>
   );
 };
-
-// ─────────────────────────────────────────────
-// Icon components
-// ─────────────────────────────────────────────
-const MicIcon = ({ color = "#fff" }) => (
-  <svg
-    width="20"
-    height="20"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke={color}
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
-    <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
-    <line x1="12" y1="19" x2="12" y2="23" />
-    <line x1="8" y1="23" x2="16" y2="23" />
-  </svg>
-);
-
-const MicOffIcon = ({ color = "#ef4444" }) => (
-  <svg
-    width="20"
-    height="20"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke={color}
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <line x1="1" y1="1" x2="23" y2="23" />
-    <path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6" />
-    <path d="M17 16.95A7 7 0 0 1 5 12v-2m14 0v2a7 7 0 0 1-.11 1.23" />
-    <line x1="12" y1="19" x2="12" y2="23" />
-    <line x1="8" y1="23" x2="16" y2="23" />
-  </svg>
-);
-
-const CameraIcon = ({ color = "#fff" }) => (
-  <svg
-    width="20"
-    height="20"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke={color}
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M23 7l-7 5 7 5V7z" />
-    <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
-  </svg>
-);
-
-const CameraOffIcon = ({ color = "#ef4444" }) => (
-  <svg
-    width="20"
-    height="20"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke={color}
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <line x1="1" y1="1" x2="23" y2="23" />
-    <path d="M21 21H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h3m3-3h6l2 3h2a2 2 0 0 1 2 2v9.34" />
-    <circle cx="12" cy="13" r="3" />
-  </svg>
-);
-
-const PhoneIcon = ({ color = "#fff" }) => (
-  <svg
-    width="18"
-    height="18"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke={color}
-    strokeWidth="2.5"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.06 6.06l1.47-1.47a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
-  </svg>
-);
-
-const PhoneEndIcon = ({ color = "#fff" }) => (
-  <svg
-    width="18"
-    height="18"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke={color}
-    strokeWidth="2.5"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M10.68 13.31a16 16 0 0 0 3.41 2.6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.42 19.42 0 0 1-3.45-3.07M2 2l20 20" />
-    <path d="M10.68 13.31A16 16 0 0 1 7.27 9.9L8.54 8.63a2 2 0 0 0 .45-2.11 15.86 15.86 0 0 1-.7-2.81A2 2 0 0 0 6.12 2H3.09A2 2 0 0 0 1.1 4.18 19.79 19.79 0 0 0 4 12.69" />
-  </svg>
-);
-
-const Spinner = () => (
-  <div
-    style={{
-      width: 16,
-      height: 16,
-      borderRadius: "50%",
-      border: "2px solid rgba(255,255,255,0.3)",
-      borderTopColor: "#fff",
-      animation: "spin 0.8s linear infinite",
-    }}
-  />
-);
-
-// ─────────────────────────────────────────────
-// Style helpers
-// ─────────────────────────────────────────────
-const circleBtn = (isActive: boolean): React.CSSProperties => ({
-  width: 52,
-  height: 52,
-  borderRadius: "50%",
-  border: "none",
-  background: isActive ? "rgba(239,68,68,0.25)" : "rgba(255,255,255,0.15)",
-  backdropFilter: "blur(12px)",
-  cursor: "pointer",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  outline: "none",
-  transition: "all 0.2s",
-});
-
-const audioCircleBtn = (
-  isActive: boolean,
-  bg?: string,
-): React.CSSProperties => ({
-  width: 64,
-  height: 64,
-  borderRadius: "50%",
-  border: "none",
-  background:
-    bg ?? (isActive ? "rgba(239,68,68,0.25)" : "rgba(255,255,255,0.12)"),
-  backdropFilter: "blur(12px)",
-  cursor: "pointer",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  outline: "none",
-  transition: "all 0.2s",
-});
-
 export default OnCall;
